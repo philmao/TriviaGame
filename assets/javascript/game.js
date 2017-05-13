@@ -1,85 +1,112 @@
 
 
 window.onload = function() {
+
 	$("#startButton").on("click", triviaGame.startGame);
 	$("#doneButton").on("click", triviaGame.doneGame);
+	$("#doneButton").hide();
 
 };
 
 
-var questions = [
-	"Clint Eastwood gave us the immortal line, 'Go ahead... make my day', in what film?",
-	"In the 1951 science fiction movie, The Day The Earth Stood Still, what was the name of the robot?",
-	"In the Dirty Harry movies starring Clint Eastwood as Dirty Harry, what was Harry's last name?"
-];
-var answers = [
-	[ 4, "Dirty Harry", "Magnum Force", "Sudden Impact", "Tightrope" ],
-	[ 3, "Gort", "Klaatu", "Robby" ],
-	[ 4, "Callahan", "Flint", "Harrigan", "Steele" ]
-];
-var correctAnswer = [ 1, 2, 1 ];
+var questions = [{
+	question: "Clint Eastwood gave us the immortal line, 'Go ahead... make my day', in what film?",
+	choices: [ "Dirty Harry", "Magnum Force", "Sudden Impact", "Tightrope" ],
+	correctAnswer: 1,
+}, {
+	question: "In the 1951 science fiction movie, The Day The Earth Stood Still, what was the name of the robot?",
+	choices: [ "Gort", "Klaatu", "Robby" ],
+	correctAnswer: 2,
+}, {
+	question: "In the Dirty Harry movies starring Clint Eastwood as Dirty Harry, what was Harry's last name?",
+	choices: [ "Callahan", "Flint", "Harrigan", "Steele" ],
+	correctAnswer: 1,
+}];
+
+var intervalId;
 
 var triviaGame = {
 
 	indexNumber: 0,
 	maxTime: 30,
-
-	// generateRandom: function() {
-	// 	console.log("Question length: " + questions.length);
-	// 	return Math.floor(Math.random() * questions.length);
-	// },
+	correctCount: 0,
+	incorrectCount: 0,
+	unansweredCount: 0,
+	timer: 0,
 
 	startGame: function() {
 
 		$("#trivia").empty();
 		console.log("started");
 
-		var timeRemaining = $("<p>");
-		timeRemaining.text("Time Remaining:  0 secs");
-		$("#trivia").append(timeRemaining);
+		timer = triviaGame.maxTime;
+		intervalId = setInterval(triviaGame.decrement, 1000);
+
+		$("#timer").text("Time Remaining: " + triviaGame.maxTime + " secs");
 
 		for(var j = 0; j < questions.length; j++) {
 
 			var questionLine = $("<p>");
-			questionLine.text(questions[j]);
+			questionLine.text(questions[j].question);
 			$("#trivia").append(questionLine);
-			console.log(questions[j]);
+			console.log(questions[j].question);
 
-			for(var i = 1; i <= answers[j][0]; i++) {
+			for(var i = 0; i < questions[j].choices.length; i++) {
 				var answerChoice = $("<input>");
-				answerChoice.attr("id", "q" + j + "choice_" + i);
-				answerChoice.attr("value", i);
+				answerChoice.attr("value", i + 1);  // value '0' is unanswered
 				answerChoice.attr("type","radio");
-				answerChoice.attr("text", answers[j][i])
+				answerChoice.attr("name","question" + j);
+				answerChoice.attr("class", "radioButtons");
 				$("#trivia").append(answerChoice);
-				console.log(answers[j][i]);
+				$("#trivia").append("<b>" + questions[j].choices[i] + "</b><br>");
+				console.log(questions[j].choices[i]);
 			}
 		}
-		var doneButton = $("<button>");
-		doneButton.text("Done");
-		doneButton.attr("id", "doneButton");
-		$("#trivia").append(doneButton);
-
+		$("#doneButton").show();
 
 	},
 	doneGame: function() {
-		console.log("done");
-	}
+		$("#doneButton").hide();
 
+		clearInterval(intervalId);
+		$("#timer").text("");
+
+		$("#trivia").empty();
+		console.log("done");
+
+		var temp = $("input[name=question0]:checked").val();
+		console.log(temp);
+		console.log(questions[0].correctAnswer);
+		if(temp === 0) {
+			triviaGame.unansweredCount++;
+		}
+		else if (temp === questions[0].correctAnswer) {
+			triviaGame.correctCount++;
+		}
+		else {
+			triviaGame.incorrectCount++;
+		}
+
+		$("#trivia").append("<h2>All Done!</h2>");
+		$("#trivia").append("<h2>Correct Answers: " + triviaGame.correctCount + "</h2>");
+		$("#trivia").append("<h2>Incorrect Answers: " + triviaGame.incorrectCount + "</h2>");
+		$("#trivia").append("<h2>Unanswered: " + triviaGame.unansweredCount + "</h2>");
+
+
+	},
+    decrement: function() {
+
+		timer -= 1;
+
+		$("#timer").text("Time Remaining:  " + timer + " secs");
+
+		if (timer === 0) {
+	      clearInterval(intervalId);
+	      triviaGame.doneGame();
+	    }
+	}
 }
 
 
-// triviaGame.indexNumber = triviaGame.generateRandom();
-// console.log("Random number: " + triviaGame.indexNumber);
 
-// $("#question").html("<p>" + questions[triviaGame.indexNumber] + "</p>");
-// console.log("Question: " + questions[triviaGame.indexNumber]);
-
-// console.log("Count: " + answers[triviaGame.indexNumber][0])
-
-// for(var i = 1; i <= answers[triviaGame.indexNumber][0]; i++) {
-// 	$("#answers").append('<input type="radio" name="radio_name" />');
-// 	console.log(answers[triviaGame.indexNumber][i]);
-// }
-// $("#answers").append(inputRadio);
 
