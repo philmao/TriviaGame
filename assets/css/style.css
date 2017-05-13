@@ -1,0 +1,26 @@
+body {
+	background-image: url("../images/doodles2.jpg");
+}
+
+.container {
+	position: absolute;
+	top: 10%;
+	left: 25%;
+	background: yellow;
+	height: 80%;
+	width: 60%;
+	margin-top: 10px;
+}
+#title {
+	font-color: blue;
+	text-align: center;
+
+}
+#timeRemaining {
+	font-color: blue;
+	text-align: center;
+}
+h1 h2 {
+	font-color: blue;
+	
+}
